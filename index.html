@@ -1,14 +1,13 @@
-<!doctype html>
-<html>
-<head>
+<html><head>
   <meta charset="utf-8" content="viewport-fit=cover">
   <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
   <title>乐而雅棉棉花园</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/animate.css">
-  <link href="css/swiper.css" rel="stylesheet" />
+  <link href="css/swiper.css" rel="stylesheet">
   <script src="js/jweixin-1.2.0.js"></script>
   <script src="js/jquery-1.11.min.js" type="text/javascript"></script>
+  <script src="js/jquery.transit.min.js"></script>
   
   <script type="text/javascript" src="js/jquery.transit.min.js"></script>
 <!--   <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script> -->
@@ -23,8 +22,8 @@
     // console.log('Hello world');
   </script>
 </head>
-<body style="opacity: 0">
-  <div class="box">
+<body style="opacity: 1;">
+  <div class="box" style="transform: scaleX(0.646875) scaleY(0.646875); height: 1276.91px;">
     <!-- <div class="loading pages">
       <div class="pro">
         <div class="pro_inside" style="width: 0%;"></div>
@@ -34,19 +33,42 @@
     <div class="music music_rotate" style="display: none;"></div>
 
     <!-- 首页 -->
-    <div class="index pages" style="z-index: 1;">
+    <div class="index pages" style="z-index: 10;display: none">
       <div class="index_bg">
-        
+        <img class="index_img" src="./images/index_img.png" alt="">
+        <img class="index_person" src="./images/index_person.png" alt="">
+        <img class="logo" src="./images/index_logo.png" alt="">
+        <div class="start_btn scale_back2 close_btn"></div>
       </div>
     </div>
 
-    <!-- <div class="pages page1 page_con"  style="z-index: 1;">
-
+    <div class="pages page1 page_con" style="z-index: 9;display: none">
+      <div class="rule_bg">
+        <div class="receive_btn close_btn"></div>
+      </div>
+      <div class="rule_btn"></div>
     </div>
 
-    <div class="pages last_page" style="z-index: 1;">
-
-    </div> -->
+    <div class="pages page2" style="z-index: 8;">
+      <div class="water_bg">
+        <div class="font_flower"></div>
+        <img class="paizi" src="./images/paizi.png" alt="">
+        <div class="zhongzi" style="opacity: 1; transform: translate(0px, 0px);"></div>
+        <div class="plant">
+          <div class="one"></div>
+          <div class="twp"></div>
+          <div class="three"></div>
+          <div class="four"></div>
+        </div>
+        <div class="kettle_box" style="">
+          <div class="kettle_shadow"></div>
+          <div class="kettle">
+            <div class="sashui"></div>
+          </div>
+        </div>
+        <div class="water_btn scale_back2" style=""></div>
+      </div>
+    </div> 
 
     
   </div>
@@ -54,5 +76,5 @@
   <!-- <audio id="bgm" src="bgm.mp3" style="opacity:0" preload="auto"  controls loop hidden="true"/></audio> -->
   <script type="text/javascript" src="js/index.js"></script>
   <script type="text/javascript" src="js/wx_share2.js"></script>
-</body>
-</html>
+
+</body></html>
