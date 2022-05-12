@@ -114,18 +114,116 @@ $(function () {
         translate: [0, 0]
       });
       setTimeout(() => {
-        // $(".zhongzi").css({
-        //   opacity: 0,
-        // translate: [-20, 0]
-        //   scale: 0.7
-        // });
         $(".kettle_box,.water_btn").fadeIn(500);
       }, 700);
     }, 500);
   }
 
+  var index = 0;
+  $(".water_btn").bind("click",()=>{
+    if (index == 0) {
+      kettle_momve(160,Grow1);
+      function Grow1() {
+        $(".zhongzi").css({
+          opacity: 0,
+          translate: [0, 20],
+          scale: 0.7
+        });
+        setTimeout(() => {
+          $(".plant>div").eq(index - 1).css({
+            opacity: 1,
+            scale: 1
+          })
+        }, 350);
+      }
+    } else if (index == 1) {
+      kettle_momve(320, Grow2);
+      function Grow2() {
+        $(".plant>div").eq(index - 2).css({
+          opacity: 0,
+          scale: 1.2
+        })
+        setTimeout(() => {
+          $(".plant>div").eq(index - 1).css({
+            opacity: 1,
+            scale: 1
+          })
+        }, 350);
+      }
+    } else if (index == 2) {
+      kettle_momve(430, Grow3);
 
+      function Grow3() {
+        $(".plant>div").eq(index - 2).css({
+          opacity: 0,
+          scale: 1.2
+        })
+        setTimeout(() => {
+          $(".plant>div").eq(index - 1).css({
+            opacity: 1,
+            scale: 1
+          })
+        }, 350);
+      }
+    } else if (index == 3) {
+      kettle_momve(530, Grow4);
 
+      function Grow4() {
+        $(".plant>div").eq(index - 2).css({
+          opacity: 0,
+          scale: 1.2
+        })
+        setTimeout(() => {
+          $(".plant>div").eq(index - 1).css({
+            opacity: 1,
+            scale: 1
+          })
+        }, 350);
+      }
+    }
+    
+
+  })
+
+  var kett_lock = false;
+  function kettle_momve(distance,callback) {
+    if (kett_lock) {
+      return false;
+    }
+    $(".kettle_shadow").hide();
+    kett_lock = true;
+    index++;
+    $(".kettle").transition({
+      translate: [0, -distance],
+    }).transition({
+      rotate: '-45deg',
+      complete: function () {
+        $(".sashui").transition({
+          opacity: 1,
+        }, 350).transition({
+          translate: [-10, 10],
+          rotate: '28deg',
+          opacity: 0,
+          complete: function () {
+            $(".kettle").transition({
+              rotate: '0'
+            }, 350).transition({
+              translate: [0, 0],
+              complete: ()=>{
+                kett_lock = false;
+                $(".kettle_shadow").fadeIn(350);
+                callback();
+              }
+            }, 350)
+          }
+        }, 250).transition({
+          translate: [0,0],
+          rotate: '28deg',
+          opacity: 0,
+        }, 250)
+      }
+    }, 500)
+  }
 
 
 
