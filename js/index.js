@@ -73,7 +73,7 @@ $(function () {
   // }, false);
 
 
-  // $(".music").bind("click",function(){
+  // $(".music").on("click",function(){
   //   if($(this).hasClass('music_rotate')){
   //     $(this).removeClass('music_rotate');
   //     bgm.pause();
@@ -85,6 +85,8 @@ $(function () {
 
   var stageWidtha = document.documentElement.clientWidth;
   var stageScalea = stageWidtha / 640;
+  var stageHeight = $(window).height() / stageScalea;
+  var screenHeight = document.documentElement.clientHeight;
   $(".box").css({
     scaleX: stageScalea,
     scaleY: stageScalea
@@ -92,9 +94,9 @@ $(function () {
   $("body").css({
     "opacity": 1
   });
-  $(".box").height($(window).height() / stageScalea);
+  $(".box").height(stageHeight);
 
-  $(".close_btn").bind("click", function () {
+  $(".close_btn").on("click", function () {
     $(this).parents(".pages").fadeOut(350);
     if ($(this).hasClass("receive_btn")) {
       setTimeout(() => {
@@ -102,8 +104,8 @@ $(function () {
       }, 350);
     }
   })
-
-  waterAni();
+// console.log(cropper, Cropper)
+  // waterAni();
 
   function waterAni() {
     $(".zhongzi").css({
@@ -120,7 +122,7 @@ $(function () {
   }
 
   var index = 0;
-  $(".water_btn").bind("click",()=>{
+  $(".water_btn").on("click",()=>{
     if (index == 0) {
       kettle_momve(160,Grow1);
       function Grow1() {
@@ -171,18 +173,24 @@ $(function () {
       function Grow4() {
         $(".plant>div").eq(index - 2).css({
           opacity: 0,
-          scale: 1.2
+          scale: 1
         })
         setTimeout(() => {
           $(".plant>div").eq(index - 1).css({
             opacity: 1,
             scale: 1
           })
+          $(".water_btn").fadeOut(350);
+          $(".dress_btn").fadeIn(350);
         }, 350);
       }
     }
-    
+  })
 
+  $(".dress_btn").on("click",()=>{
+    $(".dress_btn,.kettle_box").hide();
+    $(".plant").removeClass("swing1");
+    $(".choose_box").fadeIn(350);
   })
 
   var kett_lock = false;
@@ -192,6 +200,7 @@ $(function () {
     }
     $(".kettle_shadow").hide();
     kett_lock = true;
+    $(".water_btn").removeClass("scale_back2");
     index++;
     $(".kettle").transition({
       translate: [0, -distance],
@@ -205,14 +214,17 @@ $(function () {
           rotate: '28deg',
           opacity: 0,
           complete: function () {
+            setTimeout(() => {
+              callback();
+            }, 350);
             $(".kettle").transition({
               rotate: '0'
             }, 350).transition({
               translate: [0, 0],
               complete: ()=>{
                 kett_lock = false;
+                $(".water_btn").addClass("scale_back2");
                 $(".kettle_shadow").fadeIn(350);
-                callback();
               }
             }, 350)
           }
@@ -225,16 +237,225 @@ $(function () {
     }, 500)
   }
 
+  var inputEle = document.querySelector('#name')
+  inputEle.addEventListener('input', WidthCheck);
 
 
+// var arr = ['小丽', '小明', '小红', '家庭', '校长'];
+function WidthCheck() {
+  var str = this;
+  var w = 0;
+  var tempCount = 0;
+  //length 获取字数数，不区分汉字和英文 
+  for (var i = 0; i < str.value.length; i++) {
+    //charCodeAt()获取字符串中某一个字符的编码 
+    var c = str.value.charCodeAt(i);
+    //单字节加1 
+    if ((c >= 0x0001 && c <= 0x007e) || (0xff60 <= c && c <= 0xff9f)) {
+      w++;
+    } else {
+      w += 2;
+    }
+    if (w > 8) {
+      console.log(str.value);
+      // str.value = str.value.replace(new RegExp(arr.value.join('|'), 'img'), '*')
+      str.value = str.value.substr(0, i);
+      break;
+    }
+  }
+}
 
+$("#file").on("change", function () {
+  var file = this.files[0]
+  var fl = new FileReader()
+  fl.readAsDataURL(file)
+  fl.onload = function () {
+    $("#image").attr("src",fl.result);
+    croppImage()
+  }
+})
 
+function getRoundedCanvas(sourceCanvas) {
+  var canvas = document.createElement('canvas');
+  var context = canvas.getContext('2d');
+  var width = sourceCanvas.width;
+  var height = sourceCanvas.height;
 
-  document.body.addEventListener('touchmove', function (e) {
-    e.preventDefault(); //阻止默认的处理方式(阻止下拉滑动的效果)
-  }, {
-    passive: false
+  canvas.width = width;
+  canvas.height = height;
+  context.imageSmoothingEnabled = true;
+  context.drawImage(sourceCanvas, 0, 0, width, height);
+  context.globalCompositeOperation = 'destination-in';
+  context.beginPath();
+  context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
+  context.fill();
+  return canvas;
+}
+
+var croppable = false;
+var cropper;
+function croppImage() {
+  $(".cropperpage").show();
+  var image = document.getElementById('image');
+  cropper = new Cropper(image, {
+    dragMode: 'move',
+    aspectRatio: 1,
+    viewMode: 1,
+    autoCropArea: 0.8,
+    minContainerWidth: stageWidtha,
+    minContainerHeight: screenHeight,
+    restore: false,
+    guides: false,
+    center: false,
+    highlight: false,
+    cropBoxMovable: false,
+    cropBoxResizable: false,
+    toggleDragModeOnDblclick: false,
+    ready: function () {
+      croppable = true;
+    },
   });
+}
+
+//确定按钮
+$('#edit').on("click", function () {
+  $(".cropperpage").hide();
+  var croppedCanvas;
+  var roundedCanvas;
+  var roundedImage;
+  console.log(croppable)
+  if (!croppable) {
+    return;
+  }
+  // // Crop
+  croppedCanvas = cropper.getCroppedCanvas();
+  // Round
+  roundedCanvas = getRoundedCanvas(croppedCanvas);
+  // Show
+  roundedImage = document.createElement('img');
+  roundedImage.src = roundedCanvas.toDataURL()
+  $("#save").attr("src", roundedImage.src);
+  $("#lastImg").attr("src", roundedImage.src);
+  cropper.destroy();
+});
+
+
+
+
+
+$("#cancle").on("click",()=>{
+  $(".cropperpage").hide();
+  cropper.destroy();
+})
+
+var savearr = {
+  "expression": -1,
+  "headdress": -1,
+  "handObject": -1
+}
+
+$(".choose_unit_box>div").on("click",function(){
+  var index_ = $(this).index();
+  $(".choose_box").attr("chooseType", index_ + 1);
+  $(".choose_box").removeClass().addClass('choose_box choose' + (index_ + 1))
+})
+
+$(".add_box>div").on("click",function(){
+  var index_ = $(this).index();
+  var type = $(".choose_box").attr("chooseType") * 1;
+  var typeClass;
+  switch (type) {
+    case 1:
+      typeClass = 'expression'
+    break;
+    case 2:
+      typeClass = 'headdress'
+    break;
+    case 3:
+      typeClass = 'handObject'
+    break;
+  }
+  if (type == 1) {
+    $(".big_m1").hide();
+  }
+  console.log(type, typeClass + '_box')
+  var $class = '.' + typeClass + '_box';
+  $($class).removeClass().addClass(typeClass + '_box').addClass(typeClass + index_);
+  savearr[typeClass] = index_;
+  console.log(savearr)
+})
+
+$(".com_btn").on("click",()=>{
+  $(".page2").fadeOut(350);
+  GeneratePoster();
+  window.myScroll = new IScroll('#wrapper', {
+    bounce: false,
+    scrollX: true,
+    scrollY: false,
+    mouseWheel: true,
+    startX:-640,
+  });
+
+  $(".show_bg").on("touchmove",()=>{
+    $(".tips_img,.lf_txt").fadeOut(200);
+  })
+  
+})
+
+// QR图片颜色aa7a4e
+
+
+function GeneratePoster() {
+  var canvas = document.getElementById('canvas');
+  var context = canvas.getContext('2d');
+
+  var image = new Image();
+  image.src = './images/save_img.png';
+  image.onload = function () {
+    context.drawImage(image, 0, 0, 492, 661);
+    context.drawImage(document.getElementById("save"), 35, 35, 100, 100);
+    context.drawImage(document.getElementById("code"), 376, 510, 78, 78);
+    context.drawImage(document.getElementById("name_box"), 21, 143, 130, 58);
+    context.textAlign = 'center';
+    context.font = '20px 微软雅黑';
+    context.fillText('用户ID', 85, 170);
+    context.fillText('西瓜少吃', 85, 192);
+
+    
+    // context.restore();
+    var image1 = new Image();
+    image1.src = './images/expression/cc_1.png';
+    console.log(image)
+    image1.onload = function () {
+      context.save();
+      context.rotate(Math.PI / 6);
+      context.drawImage(image1, 221, 143, 93, 45);
+    }
+    
+  }
+  
+}
+
+GeneratePoster();
+
+
+
+
+
+$(".share_img").on("click", () => {
+  setTimeout(() => {
+    // window.location.href = 'https://www.baidu.com/';
+  }, 200);
+})
+
+
+
+
+  // document.body.addEventListener('touchmove', function (e) {
+  //   e.preventDefault(); //阻止默认的处理方式(阻止下拉滑动的效果)
+  // }, {
+  //   passive: false
+  // });
 
   var agent = navigator.userAgent.toLowerCase(); //检测是否是ios
   var iLastTouch = null; //缓存上一次tap的时间
@@ -251,5 +472,20 @@ $(function () {
       iLastTouch = iNow;
     }, false);
   }
+
+  // let Orientation = null
+  // EXIF.getData(image, function () {
+  // Orientation = EXIF.getTag(this, 'Orientation')
+  // })
+  // switch (Orientation) {
+  // case 1: // 不需要选择，正常
+  //   break
+  // case 6: // 需要顺时针（向左）90度旋转
+  //   break
+  // case 8: // 需要逆时针（向右）90度旋转   
+  //   break
+  // case 3: // 需要180度旋转
+  //   break
+  // }
 
 })
