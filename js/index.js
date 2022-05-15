@@ -104,8 +104,10 @@ $(function () {
       }, 350);
     }
   })
-// console.log(cropper, Cropper)
-  // waterAni();
+
+  $(".poster_btn").on("click",()=>{
+    $(".last").fadeIn(350);
+  })
 
   function waterAni() {
     $(".zhongzi").css({
@@ -349,10 +351,12 @@ $("#cancle").on("click",()=>{
 })
 
 var savearr = {
-  "expression": -1,
+  "expression": 1,
   "headdress": -1,
   "handObject": -1
 }
+
+var txt_gen;
 
 $(".choose_unit_box>div").on("click",function(){
   var index_ = $(this).index();
@@ -386,8 +390,17 @@ $(".add_box>div").on("click",function(){
 })
 
 $(".com_btn").on("click",()=>{
+  if ($("#name").val() == ""){
+    alert("请输入昵称!")
+    return false;
+  }
+  if ($("#save").attr("src") == "./images/photo.png") {
+    alert("请上传头像!")
+    return false;
+  }
+  txt_gen = $("#name").val();
   $(".page2").fadeOut(350);
-  GeneratePoster();
+  GeneratePoster(savearr);
   window.myScroll = new IScroll('#wrapper', {
     bounce: false,
     scrollX: true,
@@ -405,38 +418,76 @@ $(".com_btn").on("click",()=>{
 // QR图片颜色aa7a4e
 
 
-function GeneratePoster() {
-  var canvas = document.getElementById('canvas');
-  var context = canvas.getContext('2d');
+function GeneratePoster(savearr) {
+  var cloudFace;
+  var canvas1 = document.getElementById('canvas1');
+  var ctx = canvas1.getContext('2d');
 
-  var image = new Image();
-  image.src = './images/save_img.png';
-  image.onload = function () {
-    context.drawImage(image, 0, 0, 492, 661);
-    context.drawImage(document.getElementById("save"), 35, 35, 100, 100);
-    context.drawImage(document.getElementById("code"), 376, 510, 78, 78);
-    context.drawImage(document.getElementById("name_box"), 21, 143, 130, 58);
-    context.textAlign = 'center';
-    context.font = '20px 微软雅黑';
-    context.fillText('用户ID', 85, 170);
-    context.fillText('西瓜少吃', 85, 192);
+  $(".name_box span").eq(1).text(txt_gen);
 
-    
-    // context.restore();
-    var image1 = new Image();
-    image1.src = './images/expression/cc_1.png';
-    console.log(image)
-    image1.onload = function () {
-      context.save();
-      context.rotate(Math.PI / 6);
-      context.drawImage(image1, 221, 143, 93, 45);
-    }
-    
+  var i1 = savearr.expression;
+  var i2 = savearr.headdress;
+  var i3 = savearr.handObject;
+  var imgSrc = './images/new/';
+  if (i1 == -1) {
+    i1--;
   }
+  if (i2 == -1) {
+    i2--;
+  }
+  if (i3 == -1) {
+    i3--;
+  }
+
+  var image0 = new Image();
+  image0.src = './images/new/handObject/big_m.png';
+  image0.onload = function(){
+    ctx.drawImage(image0, 0, 0, 348, 266);
+    var image1 = new Image();
+    image1.src = imgSrc + 'expression/cc_' + (i1 + 1) + '.png';
+    image1.onload = function () {
+      ctx.drawImage(image1, 0, 0, 348, 266);
+      var image2 = new Image();
+      image2.src = imgSrc + 'headdress/cc_' + (i2 + 1) + '.png';
+      image2.onload = function () {
+        ctx.drawImage(image2, 0, 0, 348, 266);
+        var image3 = new Image();
+        image3.src = imgSrc + 'handObject/cc_' + (i3 + 1) + '.png';
+        image3.onload = function () {
+          ctx.drawImage(image3, 0, 0, 348, 266);
+          cloudFace = canvas1.toDataURL();
+          var canvas = document.getElementById('canvas');
+          var context = canvas.getContext('2d');
+          var image = new Image();
+          image.src = './images/save_img2.png';
+          image.onload = function () {
+            context.drawImage(image, 0, 0, 492, 661);
+            context.drawImage(document.getElementById("save"), 35, 35, 100, 100);
+            context.drawImage(document.getElementById("code"), 376, 510, 78, 78);
+            context.drawImage(document.getElementById("name_box"), 21, 143, 130, 58);
+            context.textAlign = 'center';
+            context.font = '20px 微软雅黑';
+            context.fillText('用户ID', 85, 170);
+            context.fillText(txt_gen, 85, 192);
+            var image4 = new Image();
+            image4.src = cloudFace;
+            $("#cloudImg").attr("src", cloudFace);
+            image4.onload = function () {
+              context.translate(200, 20)
+              context.rotate(Math.PI / 6)
+              context.drawImage(image4, 15, -45, 348 * 0.55, 266 * 0.55);
+              $("#s_Img").attr("src",canvas.toDataURL());
+            }
+          }
+        }
+      }
+    }
+  }
+
   
 }
 
-GeneratePoster();
+
 
 
 

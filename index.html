@@ -34,7 +34,7 @@
     <div class="music music_rotate" style="display: none;"></div>
 
     <!-- 首页 -->
-    <div class="index pages" style="z-index: 10;display: none">
+    <div class="index pages" style="z-index: 10;display: block">
       <div class="index_bg">
         <img class="index_img" src="./images/index_img.png" alt="">
         <img class="index_person" src="./images/index_person.png" alt="">
@@ -43,29 +43,29 @@
       </div>
     </div>
 
-    <div class="pages page1 page_con" style="z-index: 9;display: none">
+    <div class="pages page1 page_con" style="z-index: 9;display: block">
       <div class="rule_bg">
         <div class="receive_btn close_btn"></div>
       </div>
       <div class="rule_btn"></div>
     </div>
 
-    <div class="pages page2" style="z-index: 8;display: none;">
+    <div class="pages page2" style="z-index: 8;display: block;">
       <div class="water_bg">
         <div class="font_flower"></div>
         <img class="paizi" src="./images/paizi.png" alt="">
         <div class="zhongzi" style="opacity: 1;"></div>
-        <div class="plant swing11">
+        <div class="plant swing1">
           <div class="one"></div>
           <div class="two"></div>
           <div class="three"></div>
-          <div class="four" style="opacity: 1;">
+          <div class="four" style="opacity: 0;">
             <div class="big_m"></div>
-            <div class="big_m1"></div>
-            <div class="expression_box"></div>
+            <div class="big_m1" style="display:none"></div>
+            <div class="expression_box expression1"></div>
             <div class="handObject_box"></div>
             <div class="headdress_box"></div>
-            <div class="choose_box choose1" chooseType="1" style="display: block;">
+            <div class="choose_box choose1" chooseType="1" style="display: none;">
               <div class="choose_unit_box">
                 <div class="choose_btn"></div>
                 <div class="choose_btn"></div>
@@ -126,18 +126,22 @@
         </ul>
       </div>
 
-      <div class="last pages" style="z-index: 100;">
+      <div class="last pages" style="z-index: 666;display: none;">
         <div class="con_txt">
           <span id="selfNum">121377</span>
         </div>
         <div class="last_box">
+          <img id="s_Img" src="#" alt="">
           <div class="last_photo_box">
             <img src="./images/code.png" id="lastImg" alt="">
           </div>
           <div class="name_box">
-            <img id="name_box" src="./images/name_box.png" alt="">
             <span>用户ID</span>
             <span>西瓜少吃</span>
+          </div>
+          <img id="name_box" src="./images/name_box.png" alt="">
+          <div class="cloudFace">
+            <img id="cloudImg" src="#" alt="">
           </div>
           <div class="code_box">
             <img id="code" src="./images/code.png" alt="">
@@ -147,8 +151,12 @@
         <div class="share_img"></div>
       </div>
 
-      <div class="canvas_box pages" style="opacity: 1;z-index:100">
+      <div class="canvas_box pages" style="opacity: 1;z-index:100;pointer-events: none;opacity: 0;">
         <canvas id="canvas" width="492" height="661"></canvas>
+      </div>
+
+      <div class="canvas_box1 pages" style="opacity: 1;z-index:101;opacity: 0;pointer-events: none;">
+        <canvas id="canvas1" width="348" height="266"></canvas>
       </div>
     </div>
     

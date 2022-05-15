@@ -260,7 +260,7 @@ min-width:320px;background:#fff;
   position: absolute;
   left: 0;
   top: 50%;
-  margin-top: -640px;
+  margin-top: -690px;
 }
 
 
@@ -926,6 +926,7 @@ height: 100%;
 
 .last{
   background: rgba(0,0,0,0.7);
+  padding-top: 0px;
 }
 
 .last_box{
@@ -969,11 +970,35 @@ height: 100%;
 .name_box{
   width: 130px;
   height: 58px;
-  /* background: url(../images/name_box.png) center no-repeat; */
+  background: url(../images/name_box.png) center no-repeat;
   position: absolute;
   left: 67px;
   top: 205px;
   font-size: 18px;
+}
+
+#name_box{
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+#s_Img{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  opacity: 0;
+}
+
+.cloudFace{
+  position: absolute;
+  width: 185px;
+  height: 146px;
+  left: 237px;
+  top: 72px;
+  transform: rotate(20deg);
+  -webkit-transform: rotate(20deg);
 }
 
 .name_box span{
@@ -1934,6 +1959,14 @@ height: 100%;
 
   .index_person{
     bottom:-150px;
+  }
+
+  .water_bg{
+    margin-top: -640px;
+  }
+
+  .last{
+    padding-top: 40px;
   }
 }
 
