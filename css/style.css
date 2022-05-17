@@ -305,6 +305,11 @@ min-width:320px;background:#fff;
   -webkit-transform-origin: 48.7% 96%;
 }
 
+.sp_box{
+  position: relative;
+  top: 80px;
+}
+
 .plant>div{
   width: 100%;
   height: 100%;
@@ -319,6 +324,16 @@ min-width:320px;background:#fff;
   transition-duration: 1s;
   -webkit-transition-duration: 1s;
   opacity: 0;
+}
+
+.show_bg .plant>div{
+  opacity: 1;
+}
+
+.show_bg .plant{
+  bottom: auto;
+  transform-origin: initial;
+  -webkit-transform-origin: initial;
 }
 
 .plant .one{
@@ -887,8 +902,31 @@ height: 100%;
   position: absolute;
   left: 50%;
   margin-left: -157.5px;
-  bottom: 100px;
+  bottom: 80px;
   z-index: 10;
+}
+
+.tip_page{
+  background: rgba(0,0,0,0.7);
+}
+
+.tips_word{
+  width: 350px;
+  text-align: center;
+  margin: 90px auto;
+  font-size: 35px;
+  color: #aa7a4e;
+}
+
+.tip_kuang{
+  width: 412px;
+  height: 261px;
+  left: 50%;
+  margin-left: -206px;
+  top: 50%;
+  margin-top: -200px;
+  position: absolute;
+  background: url(../images/tip_kuang.png) center no-repeat;
 }
 
 .share_btn{
@@ -1013,6 +1051,17 @@ height: 100%;
   position: relative;
   top: -3px;
 }
+
+.big_flower {
+  background-image: url("../images/big_flower.png");
+  position: absolute;
+  left: 787px;
+  top: 366px;
+  width: 381px;
+  height: 577px;
+  z-index: 45;
+}
+
 
 
 

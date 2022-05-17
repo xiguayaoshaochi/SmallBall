@@ -1,3 +1,4 @@
+// import Mint from '../node_modules/mint-filter/dist/index.js'
 var u = navigator.userAgent;
 var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
 var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
@@ -21,6 +22,7 @@ var browser = {
   language: (navigator.browserLanguage || navigator.language).toLowerCase()
 }
 
+// console.log(Mint)
 
 if (/Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)) { //判断是否safari
 
@@ -355,6 +357,64 @@ var savearr = {
   "headdress": -1,
   "handObject": -1
 }
+var siter = [16,46,48,49];
+var selfSite = localStorage.getItem('selfSite');
+
+//第一次进入或者清除缓存之后重新随机4个位置当中的一个，反之直接读取缓存的位置数据
+if (!selfSite) {
+  var r = Math.round(Math.random()*3);
+  selfSite = siter[r];
+  localStorage.setItem('selfSite', siter[r]);
+}
+
+console.log(selfSite)
+// 16 46 48 49
+
+
+$.ajax({
+  url: "js/cottonArr.json", //json文件位置
+  type: "GET", //请求方式为get
+  dataType: "json", //返回数据格式为json
+  success: function (dataarr) { //请求成功完成后要执行的方法 
+    // $.addWeiXinEvent();
+    // console.log(dataarr);
+    $.ajax({
+      url: "js/site.json", //json文件位置
+      type: "GET", //请求方式为get
+      dataType: "json", //返回数据格式为json
+      success: function (data) { //请求成功完成后要执行的方法 
+        // $.addWeiXinEvent();
+        // console.log(data);
+        dataarr.forEach((el, index) => {
+          var ry = '0deg';
+          var random = Math.round(Math.random() * 1);
+          if (random == 0) {
+            ry = '180deg';
+          }
+          var leftNum = data[index].left - (380 * (1 - (data[index].width / 380)) / 2);
+          var TopNum = data[index].top - (573 * (1 - (data[index].width / 380)) / 2);
+          var styleCss = '-webkit-transform: scale(' + (data[index].width / 380) / 1 + ');' +
+          'transform: scale(' + (data[index].width / 380) / 1 + ');' +
+          'left:' + leftNum + 'px;' +
+          'top:' + TopNum + 'px;' +
+          'z-index:' + data[index]['z-index'] + ';'
+          var divStr =
+            '<div class="plant" style="' + styleCss + '">' +
+            '<div class="four" style="transform:rotateY('+ ry +')">' +
+            '<div class="big_m"></div>' +
+            '<div class="expression_box expression' + el['expression'] + ' "></div>' +
+            '<div class="handObject_box handObject' + el['handObject'] + '"></div>' +
+            '<div class="headdress_box headdress' + el['headdress'] + '"></div>' +
+            '</div>' +
+            '</div>';
+          $(".sp_box").append(divStr);
+        })
+      }
+    })
+  }
+})
+
+
 
 var txt_gen;
 
@@ -384,23 +444,36 @@ $(".add_box>div").on("click",function(){
   }
   console.log(type, typeClass + '_box')
   var $class = '.' + typeClass + '_box';
-  $($class).removeClass().addClass(typeClass + '_box').addClass(typeClass + index_);
+  $(".water_bg").find($class).removeClass().addClass(typeClass + '_box').addClass(typeClass + index_);
   savearr[typeClass] = index_;
   console.log(savearr)
 })
 
 $(".com_btn").on("click",()=>{
   if ($("#name").val() == ""){
-    alert("请输入昵称!")
+    showTip("请输入昵称!")
     return false;
   }
   if ($("#save").attr("src") == "./images/photo.png") {
-    alert("请上传头像!")
+    showTip("请上传头像!")
     return false;
   }
   txt_gen = $("#name").val();
   $(".page2").fadeOut(350);
   GeneratePoster(savearr);
+  // selfSite
+  $.each($(".sp_box .plant"),function () {
+    console.log($(this))
+    if ($(this).css('zIndex') == selfSite) {
+      console.log($(this).css('zIndex'))
+       var i1 = savearr.expression;
+       var i2 = savearr.headdress;
+       var i3 = savearr.handObject;
+      $(this).find('.expression_box').removeClass().addClass('expression_box expression' + i1);
+      $(this).find('.headdress_box').removeClass().addClass('headdress_box headdress' + i2);
+      $(this).find('.handObject_box').removeClass().addClass('handObject_box handObject' + i3);
+    }
+  })
   window.myScroll = new IScroll('#wrapper', {
     bounce: false,
     scrollX: true,
@@ -408,14 +481,34 @@ $(".com_btn").on("click",()=>{
     mouseWheel: true,
     startX:-640,
   });
-
-  $(".show_bg").on("touchmove",()=>{
-    $(".tips_img,.lf_txt").fadeOut(200);
-  })
   
 })
 
+window.myScroll = new IScroll('#wrapper', {
+  bounce: false,
+  scrollX: true,
+  scrollY: false,
+  mouseWheel: true,
+  startX: -640,
+});
+
+myScroll.on('beforeScrollStart', ()=>{
+  $(".tips_img,.lf_txt").fadeOut(200);
+});
+
 // QR图片颜色aa7a4e
+
+$(".tip_kuang").on("click",function(){
+  $(".tip_page").fadeOut(350);
+})
+
+function showTip(txt) {
+  $(".tip_page").fadeIn(350);
+  $(".tips_word").text(txt);
+  setTimeout(() => {
+    $(".tip_page").fadeOut(350);
+  }, 3000);
+}
 
 
 function GeneratePoster(savearr) {
@@ -499,6 +592,26 @@ $(".share_img").on("click", () => {
   }, 200);
 })
 
+
+function ReadFile(data) {
+  console.log(data)
+  // var data = "gay同志\r\n大家看得见\r\n";
+  window.txtCon = data.replace(/[\r\n]/g, "|").replace(/[\*\?]/g, "").replace(/\|$/, "");
+  txtCon = new RegExp(txtCon, 'gi');
+  console.log(txtCon)
+  console.log(txtCon.test("西瓜宝22洁11"))
+}
+// var xhr = new XMLHttpRequest();
+// xhr.onload = function () {
+//   ReadFile(xhr.responseText);
+// };
+// try {
+//   xhr.open("get", "../sensitive_words_lines.txt", true);
+//   xhr.send();
+// } catch (ex) {
+//   console.log("catch")
+//   ReadFile(ex.message);
+// }
 
 
 
