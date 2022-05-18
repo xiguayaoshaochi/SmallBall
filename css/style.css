@@ -1062,8 +1062,45 @@ height: 100%;
   z-index: 45;
 }
 
+.music{
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  background: url(../images/musice_off.png) center no-repeat;
+  right: 15px;
+  top: 15px;
+  z-index: 10;
+  transform: translateZ(10px);
+  -webkit-transform: translateZ(10px);
+}
 
 
+.music_rotate{
+  background: url(../images/musice_on.png) center no-repeat;
+  animation: rotate_guang2 3s infinite linear;
+  -webkit-animation: rotate_guang2 3s infinite linear;
+}
+
+
+@-webkit-keyframes rotate_guang2{
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes rotate_guang2{
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 
 .scale_back2{

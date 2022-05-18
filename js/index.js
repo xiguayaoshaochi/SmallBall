@@ -66,24 +66,26 @@ $(function () {
   //   $(".loading").fadeOut(500);
   // });
 
-  // var bgm = document.getElementById("bgm");
-  // document.addEventListener("WeixinJSBridgeReady", function () {
-  //   if (isiOS) {
-  //     bgm.play();
-  //   }
+  var bgm = document.getElementById("bgm");
+  document.addEventListener("WeixinJSBridgeReady", function () {
+    bgm.play();
+  }, false);
 
-  // }, false);
+  bgm.addEventListener('playing',()=>{
+    $(".music").css('opacity',"1");
+    $(".music").addClass('music_rotate');
+  })
 
 
-  // $(".music").on("click",function(){
-  //   if($(this).hasClass('music_rotate')){
-  //     $(this).removeClass('music_rotate');
-  //     bgm.pause();
-  //   }else{
-  //     $(this).addClass('music_rotate');
-  //     bgm.play();
-  //   }
-  // })
+  $(".music").on("click",function(){
+    if($(this).hasClass('music_rotate')){
+      $(this).removeClass('music_rotate');
+      bgm.pause();
+    }else{
+      $(this).addClass('music_rotate');
+      bgm.play();
+    }
+  })
 
   var stageWidtha = document.documentElement.clientWidth;
   var stageScalea = stageWidtha / 640;
@@ -99,6 +101,9 @@ $(function () {
   $(".box").height(stageHeight);
 
   $(".close_btn").on("click", function () {
+    if ($(this).hasClass('start_btn') && bgm.paused) {
+      bgm.play();
+    }
     $(this).parents(".pages").fadeOut(350);
     if ($(this).hasClass("receive_btn")) {
       setTimeout(() => {
