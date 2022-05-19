@@ -1,4 +1,5 @@
-// import Mint from '../node_modules/mint-filter/dist/index.js'
+// import Mint from 'mint-filter'
+console.log(1, 1, 1, 1)
 var u = navigator.userAgent;
 var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
 var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
@@ -22,7 +23,29 @@ var browser = {
   language: (navigator.browserLanguage || navigator.language).toLowerCase()
 }
 
-// console.log(Mint)
+function ReadFile(data) {
+  // console.log(data)
+  // var data = "gay同志\r\n大家看得见\r\n";
+  window.txtCon = data.replace(/[\r\n]/g, "|").replace(/[\*\?]/g, "").replace(/\|$/, "");
+  // window.txtCon = data.replace(/[\r\n]/g, "|").replace(/[\*\?]/g, "").replace(/\|$/, "").split('|');
+  // txtCon = new RegExp(txtCon, 'gi');
+  // console.log(txtCon)
+  // console.log(txtCon.test("西瓜宝22洁11"))
+}
+var xhr = new XMLHttpRequest();
+xhr.onload = function () {
+  ReadFile(xhr.responseText);
+};
+try {
+  xhr.open("get", "../sensitive_words_lines.txt", true);
+  xhr.send();
+} catch (ex) {
+  console.log("catch")
+  ReadFile(ex.message);
+}
+
+
+
 
 if (/Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)) { //判断是否safari
 
@@ -35,7 +58,7 @@ if (/Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)) {
 var num = 1;
 var list = [];
 var imgArr = [
-  "images/index_bg.jpg"
+  "images/index_bg.jpg", "images/big_bg.jpg"
 ]
 // for (let i = 0; i < imgArr.length; i++) {
 //   const el = imgArr[i];
@@ -301,6 +324,8 @@ function getRoundedCanvas(sourceCanvas) {
   return canvas;
 }
 
+
+
 var croppable = false;
 var cropper;
 function croppImage() {
@@ -383,13 +408,13 @@ $.ajax({
   success: function (dataarr) { //请求成功完成后要执行的方法 
     // $.addWeiXinEvent();
     // console.log(dataarr);
+    console.log("diyici");
     $.ajax({
       url: "js/site.json", //json文件位置
       type: "GET", //请求方式为get
       dataType: "json", //返回数据格式为json
       success: function (data) { //请求成功完成后要执行的方法 
         // $.addWeiXinEvent();
-        // console.log(data);
         dataarr.forEach((el, index) => {
           var ry = '0deg';
           var random = Math.round(Math.random() * 1);
@@ -405,6 +430,7 @@ $.ajax({
           'z-index:' + data[index]['z-index'] + ';'
           var divStr =
             '<div class="plant" style="' + styleCss + '">' +
+            '<span class="id_box">' + el['name'] + '</span>' +
             '<div class="four" style="transform:rotateY('+ ry +')">' +
             '<div class="big_m"></div>' +
             '<div class="expression_box expression' + el['expression'] + ' "></div>' +
@@ -455,10 +481,19 @@ $(".add_box>div").on("click",function(){
 })
 
 $(".com_btn").on("click",()=>{
+  
   if ($("#name").val() == ""){
     showTip("请输入昵称!")
     return false;
   }
+  // const mint = new Mint([txtCon]);
+  // var testBoolean = mint.validator($("#name").val());
+  txtCon = new RegExp(txtCon, 'gi');
+  // console.log(,'有没有敏感词');
+  if (txtCon.test($("#name").val())) {
+    showTip("昵称中包含敏感字符!")
+  }
+  // console.log(testBoolean)
   if ($("#save").attr("src") == "./images/photo.png") {
     showTip("请上传头像!")
     return false;
@@ -468,7 +503,7 @@ $(".com_btn").on("click",()=>{
   GeneratePoster(savearr);
   // selfSite
   $.each($(".sp_box .plant"),function () {
-    console.log($(this))
+    // console.log($(this))
     if ($(this).css('zIndex') == selfSite) {
       console.log($(this).css('zIndex'))
        var i1 = savearr.expression;
@@ -598,33 +633,15 @@ $(".share_img").on("click", () => {
 })
 
 
-function ReadFile(data) {
-  console.log(data)
-  // var data = "gay同志\r\n大家看得见\r\n";
-  window.txtCon = data.replace(/[\r\n]/g, "|").replace(/[\*\?]/g, "").replace(/\|$/, "");
-  txtCon = new RegExp(txtCon, 'gi');
-  console.log(txtCon)
-  console.log(txtCon.test("西瓜宝22洁11"))
-}
-// var xhr = new XMLHttpRequest();
-// xhr.onload = function () {
-//   ReadFile(xhr.responseText);
-// };
-// try {
-//   xhr.open("get", "../sensitive_words_lines.txt", true);
-//   xhr.send();
-// } catch (ex) {
-//   console.log("catch")
-//   ReadFile(ex.message);
-// }
 
 
 
-  // document.body.addEventListener('touchmove', function (e) {
-  //   e.preventDefault(); //阻止默认的处理方式(阻止下拉滑动的效果)
-  // }, {
-  //   passive: false
-  // });
+
+  document.body.addEventListener('touchmove', function (e) {
+    e.preventDefault(); //阻止默认的处理方式(阻止下拉滑动的效果)
+  }, {
+    passive: false
+  });
 
   var agent = navigator.userAgent.toLowerCase(); //检测是否是ios
   var iLastTouch = null; //缓存上一次tap的时间

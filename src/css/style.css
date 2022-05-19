@@ -201,6 +201,22 @@ min-width:320px;background:#fff;
   margin-top: -464.5px;
 }
 
+.id_box{
+  width: 100px;
+  height: 30px;
+  display: block;
+  box-sizing: border-box;
+  font-size: 20px;
+  position: absolute;
+  border: 3px solid #facd29;
+  border-radius: 20px;
+  background: #fcfe83;
+  text-align: center;
+  left: 50%;
+  margin-left: -50px;
+  top: -50px;
+}
+
 .index_person{
   position: absolute;
   left: 0;
