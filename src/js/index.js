@@ -1,5 +1,4 @@
 // import Mint from 'mint-filter'
-console.log(1, 1, 1, 1)
 var u = navigator.userAgent;
 var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
 var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
@@ -37,7 +36,12 @@ xhr.onload = function () {
   ReadFile(xhr.responseText);
 };
 try {
-  xhr.open("get", "../sensitive_words_lines.txt", true);
+  if (window.location.href.indexOf('808') > -1) {
+    xhr.open("get", "./sensitive_words_lines.txt", true);
+  }else{
+    xhr.open("get", "js/sensitive_words_lines.txt", true);
+  }
+  
   xhr.send();
 } catch (ex) {
   console.log("catch")
@@ -53,7 +57,7 @@ if (/Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)) {
 
 }
 
-
+var txt_gen;
 
 var num = 1;
 var list = [];
@@ -71,6 +75,19 @@ var imgArr = [
 //   }
 // }
 
+var a = 1;
+var c = setInterval(() => {
+  if (a % 4 == 0) {
+    $(".loading_txt>span").hide();
+  }else{
+    $(".loading_txt>span").eq((a % 4) - 1).show();
+  }
+  a++;
+  setTimeout(() => {
+    clearInterval(c);
+    $(".loading").fadeOut(350)
+  }, 1500);
+}, 500);
 
 
 
@@ -99,6 +116,8 @@ $(function () {
     $(".music").addClass('music_rotate');
   })
 
+    
+
 
   $(".music").on("click",function(){
     if($(this).hasClass('music_rotate')){
@@ -118,10 +137,14 @@ $(function () {
     scaleX: stageScalea,
     scaleY: stageScalea
   });
-  $("body").css({
-    "opacity": 1
-  });
+  
   $(".box").height(stageHeight);
+  setTimeout(() => {
+    $("body").css({
+      "opacity": 1
+    });
+  }, 200);
+  
 
   $(".close_btn").on("click", function () {
     if ($(this).hasClass('start_btn') && bgm.paused) {
@@ -136,6 +159,10 @@ $(function () {
   })
 
   $(".poster_btn").on("click",()=>{
+    if (bgm.paused) {
+      bgm.play();
+    }
+    $(".tips_img,.now_num").hide();
     $(".last").fadeIn(350);
   })
 
@@ -145,11 +172,15 @@ $(function () {
     });
     setTimeout(() => {
       $(".zhongzi").css({
-        translate: [0, 0]
+        translate: [0, 20]
       });
       setTimeout(() => {
+        $(".zhongzi").css({
+          opacity: 0,
+          scale: 0.7
+        });
         $(".kettle_box,.water_btn").fadeIn(500);
-      }, 700);
+      }, 500);
     }, 500);
   }
 
@@ -158,17 +189,17 @@ $(function () {
     if (index == 0) {
       kettle_momve(160,Grow1);
       function Grow1() {
-        $(".zhongzi").css({
-          opacity: 0,
-          translate: [0, 20],
-          scale: 0.7
-        });
+        // $(".zhongzi").css({
+        //   opacity: 0,
+        //   translate: [0, 20],
+        //   scale: 0.7
+        // });
         setTimeout(() => {
           $(".plant>div").eq(index - 1).css({
             opacity: 1,
             scale: 1
           })
-        }, 350);
+        }, 0);
       }
     } else if (index == 1) {
       kettle_momve(320, Grow2);
@@ -220,6 +251,7 @@ $(function () {
   })
 
   $(".dress_btn").on("click",()=>{
+    getData(flag, 'middle')
     $(".dress_btn,.kettle_box").hide();
     $(".plant").removeClass("swing1");
     $(".choose_box").fadeIn(350);
@@ -270,7 +302,26 @@ $(function () {
   }
 
   var inputEle = document.querySelector('#name')
-  inputEle.addEventListener('input', WidthCheck);
+  inputEle.addEventListener('change', WidthCheck);
+
+  // window.swiper = new Swiper(".mySwiper", {
+  //   direction: "horizontal",
+  //   slidesPerView: "auto",
+  //   freeMode: true,
+  //   mousewheel: true,
+  //   resistanceRatio: 0,
+  //   on: {
+  //     init: function (swiper) {
+  //       setTimeout(() => {
+  //         this.setTranslate(-640);
+  //       }, 200);
+  //     },
+  //     touchStart: function (swiper, event) {
+  //       $(".tips_img,.lf_txt").fadeOut(200);
+  //     },
+  //   },
+  // });
+
 
 
 // var arr = ['小丽', '小明', '小红', '家庭', '校长'];
@@ -289,18 +340,18 @@ function WidthCheck() {
       w += 2;
     }
     if (w > 8) {
-      console.log(str.value);
+      // console.log(str.value);
       // str.value = str.value.replace(new RegExp(arr.value.join('|'), 'img'), '*')
       str.value = str.value.substr(0, i);
       break;
     }
   }
 }
-
+window.imgFile = ''
 $("#file").on("change", function () {
-  var file = this.files[0]
+  imgFile = this.files[0];
   var fl = new FileReader()
-  fl.readAsDataURL(file)
+  fl.readAsDataURL(imgFile)
   fl.onload = function () {
     $("#image").attr("src",fl.result);
     croppImage()
@@ -352,12 +403,13 @@ function croppImage() {
 }
 
 //确定按钮
+window.base64Img ='';
 $('#edit').on("click", function () {
   $(".cropperpage").hide();
   var croppedCanvas;
   var roundedCanvas;
   var roundedImage;
-  console.log(croppable)
+  // console.log(croppable)
   if (!croppable) {
     return;
   }
@@ -367,9 +419,13 @@ $('#edit').on("click", function () {
   roundedCanvas = getRoundedCanvas(croppedCanvas);
   // Show
   roundedImage = document.createElement('img');
-  roundedImage.src = roundedCanvas.toDataURL()
-  $("#save").attr("src", roundedImage.src);
-  $("#lastImg").attr("src", roundedImage.src);
+  roundedImage.src = roundedCanvas.toDataURL('image/jpg',1)
+  base64Img = roundedImage.src;
+  var file = document.getElementById('file');
+  file.value = '';
+  $("#save").attr("src", base64Img);
+  $("#lastImg").attr("src", base64Img);
+
   cropper.destroy();
 });
 
@@ -382,7 +438,7 @@ $("#cancle").on("click",()=>{
   cropper.destroy();
 })
 
-var savearr = {
+window.savearr = {
   "expression": 1,
   "headdress": -1,
   "handObject": -1
@@ -397,57 +453,119 @@ if (!selfSite) {
   localStorage.setItem('selfSite', siter[r]);
 }
 
-console.log(selfSite)
+console.log(selfSite, 'selfSite')
 // 16 46 48 49
 
-
-$.ajax({
-  url: "js/cottonArr.json", //json文件位置
-  type: "GET", //请求方式为get
-  dataType: "json", //返回数据格式为json
-  success: function (dataarr) { //请求成功完成后要执行的方法 
-    // $.addWeiXinEvent();
-    // console.log(dataarr);
-    console.log("diyici");
-    $.ajax({
-      url: "js/site.json", //json文件位置
-      type: "GET", //请求方式为get
-      dataType: "json", //返回数据格式为json
-      success: function (data) { //请求成功完成后要执行的方法 
-        // $.addWeiXinEvent();
-        dataarr.forEach((el, index) => {
-          var ry = '0deg';
-          var random = Math.round(Math.random() * 1);
-          if (random == 0) {
-            ry = '180deg';
-          }
-          var leftNum = data[index].left - (380 * (1 - (data[index].width / 380)) / 2);
-          var TopNum = data[index].top - (573 * (1 - (data[index].width / 380)) / 2);
-          var styleCss = '-webkit-transform: scale(' + (data[index].width / 380) / 1 + ');' +
-          'transform: scale(' + (data[index].width / 380) / 1 + ');' +
-          'left:' + leftNum + 'px;' +
-          'top:' + TopNum + 'px;' +
-          'z-index:' + data[index]['z-index'] + ';'
-          var divStr =
-            '<div class="plant" style="' + styleCss + '">' +
-            '<span class="id_box">' + el['name'] + '</span>' +
-            '<div class="four" style="transform:rotateY('+ ry +')">' +
-            '<div class="big_m"></div>' +
-            '<div class="expression_box expression' + el['expression'] + ' "></div>' +
-            '<div class="handObject_box handObject' + el['handObject'] + '"></div>' +
-            '<div class="headdress_box headdress' + el['headdress'] + '"></div>' +
-            '</div>' +
-            '</div>';
-          $(".sp_box").append(divStr);
-        })
-      }
-    })
+// var flag = 1;
+function getData(flag,str) {
+  if (flag == 0 && str == 'start') {
+    return false
   }
-})
+ 
+  $.ajax({
+    url: "js/cottonArr.json", //json文件位置
+    type: "GET", //请求方式为get
+    dataType: "json", //返回数据格式为json
+    success: function (dataarr) { //请求成功完成后要执行的方法 
+      $.ajax({
+        url: "https://h5sites.com/laurier/api/ajax_getRandom.php", //json文件位置
+        type: "GET", //请求方式为get
+        dataType: "JSON", //返回数据格式为json
+        success: function (datastr) { //请求成功完成后要执行的方法 
+          // $.addWeiXinEvent();
+          console.log(datastr.data.list,'listdata');
+          window.dList = datastr.data.list;
+          window.totalNum = datastr.data.list.length + 1 + 50;
+          window.selfNum = datastr.data.self.id;
+          window.selfData = datastr.data.self;
+          console.log(selfData, 'selfData1')
+          if (selfData.nickname) {
+            txt_gen = selfData.nickname;
+            savearr = JSON.parse(selfData.desc)
+            $("#save").attr("src", selfData.headimgurl);
+            $("#lastImg").attr("src", selfData.headimgurl);
+          }
+          
+          if (dList) {
+            dList.forEach((el, index) => {
+              // console.log(el)
+              dataarr[index].name = el.nickname;
+              dataarr[index].cottonid = el.id;
+              dataarr[index].expression = JSON.parse(el.desc).expression;
+              dataarr[index].headdress = JSON.parse(el.desc).headdress;
+              dataarr[index].handObject = JSON.parse(el.desc).handObject;
+            })
+          }
+          // console.log(dataarr)
+          $.ajax({
+            url: "js/site.json", //json文件位置
+            type: "GET", //请求方式为get
+            dataType: "json", //返回数据格式为json
+            success: function (data) { //请求成功完成后要执行的方法 
+              // $.addWeiXinEvent();
+              dataarr.forEach((el, index) => {
+                var ry = '0deg';
+                var random = Math.round(Math.random() * 1);
+                if (random == 0) {
+                  ry = '180deg';
+                }
+                var leftNum = data[index].left - (380 * (1 - (data[index].width / 380)) / 2);
+                var TopNum = data[index].top - (573 * (1 - (data[index].width / 380)) / 2);
+                var styleCss = '-webkit-transform: scale(' + (data[index].width / 380) / 1 + ');' +
+                  'transform: scale(' + (data[index].width / 380) / 1 + ');' +
+                  'left:' + leftNum + 'px;' +
+                  'top:' + TopNum + 'px;' +
+                  'z-index:' + data[index]['z-index'] + ';'
+                var divStr =
+                  '<div class="plant" style="' + styleCss + '">' +
+                  '<span class="id_box">' + el['name'] + '</span>' +
+                  '<div class="four" style="transform:rotateY(' + ry + ')">' +
+                  '<div class="big_m"></div>' +
+                  '<div class="expression_box expression' + el['expression'] + ' "></div>' +
+                  '<div class="handObject_box handObject' + el['handObject'] + '"></div>' +
+                  '<div class="headdress_box headdress' + el['headdress'] + '"></div>' +
+                  '</div>' +
+                  '</div>';
+                $(".sp_box").append(divStr);
+              })
+
+              if (str == 'start') {
+                $(".index,.page1,.page2").hide();
+                $("#totalNum").text(totalNum);
+                $("#selfNum").text(selfNum);
+                GeneratePoster(savearr);
+                // selfSite
+                $.each($(".sp_box .plant"), function () {
+                  // console.log($(this))
+                  if ($(this).css('zIndex') == selfSite) {
+                    console.log($(this).css('zIndex'))
+                    var i1 = savearr.expression;
+                    var i2 = savearr.headdress;
+                    var i3 = savearr.handObject;
+                    $(this).find('.expression_box').removeClass().addClass('expression_box expression' + i1);
+                    $(this).find('.headdress_box').removeClass().addClass('headdress_box headdress' + i2);
+                    $(this).find('.handObject_box').removeClass().addClass('handObject_box handObject' + i3);
+                    $(this).find('.id_box').text(selfData.nickname);
+                  }
+                })
+              }
+            }
+          })
+        },
+        error: function (err) {
+          console.log(err)
+        }
+      })
+    }
+  })
+}
+
+getData(flag, 'start')
 
 
 
-var txt_gen;
+
+
 
 $(".choose_unit_box>div").on("click",function(){
   var index_ = $(this).index();
@@ -480,25 +598,69 @@ $(".add_box>div").on("click",function(){
   console.log(savearr)
 })
 
+var  lockcom = false;
 $(".com_btn").on("click",()=>{
+  console.log("com触发")
   
+  if (lockcom) {
+    return false;
+  }
+
+  lockcom = true;
   if ($("#name").val() == ""){
     showTip("请输入昵称!")
+    lockcom = false;
     return false;
   }
   // const mint = new Mint([txtCon]);
   // var testBoolean = mint.validator($("#name").val());
+  
   txtCon = new RegExp(txtCon, 'gi');
   // console.log(,'有没有敏感词');
   if (txtCon.test($("#name").val())) {
     showTip("昵称中包含敏感字符!")
+    lockcom = false;
+    return false;
   }
   // console.log(testBoolean)
   if ($("#save").attr("src") == "./images/photo.png") {
     showTip("请上传头像!")
+    lockcom = false;
     return false;
   }
   txt_gen = $("#name").val();
+  console.log("com触发2")
+  $.ajax({
+    url: "https://h5sites.com/laurier/api/ajax_upload.php", //json文件位置
+    type: "POST", //请求方式为get
+    data: {
+      data: base64Img.slice(22)
+    },
+    dataType: "JSON", //返回数据格式为json
+    success: function (data) { //请求成功完成后要执行的方法 
+      // $.addWeiXinEvent();
+      window.data11 = data
+      console.log(data,data.path)
+        $.ajax({
+          url: "https://h5sites.com/laurier/api/ajax_add.php", //json文件位置
+          type: "POST", //请求方式为get
+          data: {
+            "nickname": txt_gen, "desc": JSON.stringify(savearr), "headimgurl": data.data.path,
+          },
+          dataType: "JSON", //返回数据格式为json
+          success: function (datastr) { //请求成功完成后要执行的方法 
+            // $.addWeiXinEvent();
+            console.log(datastr)
+            lockcom = false;
+          },
+          error: function(err){
+            console.log(err)
+          }
+        })
+    }
+  })
+  $("#totalNum").text(totalNum);
+  $("#selfNum").text(selfNum);
   $(".page2").fadeOut(350);
   GeneratePoster(savearr);
   // selfSite
@@ -512,15 +674,16 @@ $(".com_btn").on("click",()=>{
       $(this).find('.expression_box').removeClass().addClass('expression_box expression' + i1);
       $(this).find('.headdress_box').removeClass().addClass('headdress_box headdress' + i2);
       $(this).find('.handObject_box').removeClass().addClass('handObject_box handObject' + i3);
+      $(this).find('.id_box').text(txt_gen);
     }
   })
-  window.myScroll = new IScroll('#wrapper', {
-    bounce: false,
-    scrollX: true,
-    scrollY: false,
-    mouseWheel: true,
-    startX:-640,
-  });
+  // window.myScroll = new IScroll('#wrapper', {
+  //   bounce: false,
+  //   scrollX: true,
+  //   scrollY: false,
+  //   mouseWheel: true,
+  //   startX:-640,
+  // });
   
 })
 
@@ -529,12 +692,74 @@ window.myScroll = new IScroll('#wrapper', {
   scrollX: true,
   scrollY: false,
   mouseWheel: true,
+  useTransform: false,
   startX: -640,
 });
 
-myScroll.on('beforeScrollStart', ()=>{
+var showlock = false;
+myScroll.on('beforeScrollStart', () => {
+  if (bgm.paused) {
+    bgm.play();
+  }
+  if (showlock) {
+    return false;
+  }
+  showlock = true;
   $(".tips_img,.lf_txt").fadeOut(200);
-});
+})
+
+
+
+
+var submit = false;
+$(".submit_btn").on("click", function () {
+  if (submit) {
+    return false;
+  }
+  submit = true;
+  if ($(".type_name").val() == '') {
+    showTip('请填写您的姓名！');
+    submit = false;
+    return false;
+  }
+  if ($(".type_phone").val() == '') {
+    showTip('请填写您的电话！');
+    submit = false;
+    return false;
+  }
+  if ($(".type_address").val() == '') {
+    showTip('请填写您的地址！');
+    submit = false;
+    return false;
+  }
+
+  $.ajax({
+    url: "https://h5sites.com/laurier/api/ajax_update.php", //json文件位置
+    type: "GET", //请求方式为get
+    dataType: "JSON", //返回数据格式为json
+    data: {
+      "name": $(".type_name").val(),
+      "mobile": $(".type_phone").val(),
+      "address": $(".type_address").val(),
+    },
+    success: function (datastr) { //请求成功完成后要执行的方法 
+      console.log(datastr);
+      if (datastr.code == 1) {
+        $(".success_txt").show();
+        $(".type_box").hide();
+      }
+      setTimeout(() => {
+        // window.location.href = 'https://www.baidu.com/';
+      }, 200);
+    },
+    error: function (err) {
+      submit = false;
+      console.log(err)
+    }
+  })
+})
+
+
 
 // QR图片颜色aa7a4e
 
@@ -556,66 +781,93 @@ function GeneratePoster(savearr) {
   var canvas1 = document.getElementById('canvas1');
   var ctx = canvas1.getContext('2d');
 
-  $(".name_box span").eq(1).text(txt_gen);
+  
+  if (selfData.nickname) {
+    $.ajax({
+      url: "https://h5sites.com/laurier/api/ajax_getRandom.php", //json文件位置
+      type: "GET", //请求方式为get
+      dataType: "JSON", //返回数据格式为json
+      success: function (datastr) { //请求成功完成后要执行的方法 
+        window.selfData = datastr.data.self;
+        console.log(selfData, 'selfData2')
+        if (selfData.nickname) {
+          txt_gen = selfData.nickname;
+          $("#save").attr("src", selfData.headimgurl);
+          $("#lastImg").attr("src", selfData.headimgurl);
+          savearr = JSON.parse(selfData.desc)
+        }
+        saveBack();
+      },
+      error: function (err) {
+        console.log(err)
+      }
+    })
+  } else {
+    saveBack();
+  }
 
-  var i1 = savearr.expression;
-  var i2 = savearr.headdress;
-  var i3 = savearr.handObject;
-  var imgSrc = './images/new/';
-  if (i1 == -1) {
-    i1--;
-  }
-  if (i2 == -1) {
-    i2--;
-  }
-  if (i3 == -1) {
-    i3--;
-  }
+  function saveBack() {
+    $(".name_box span").eq(1).text(txt_gen);
+    var i1 = savearr.expression;
+    var i2 = savearr.headdress;
+    var i3 = savearr.handObject;
+    var imgSrc = './images/new/';
+    if (i1 == -1) {
+      i1--;
+    }
+    if (i2 == -1) {
+      i2--;
+    }
+    if (i3 == -1) {
+      i3--;
+    }
 
-  var image0 = new Image();
-  image0.src = './images/new/handObject/big_m.png';
-  image0.onload = function(){
-    ctx.drawImage(image0, 0, 0, 348, 266);
-    var image1 = new Image();
-    image1.src = imgSrc + 'expression/cc_' + (i1 + 1) + '.png';
-    image1.onload = function () {
-      ctx.drawImage(image1, 0, 0, 348, 266);
-      var image2 = new Image();
-      image2.src = imgSrc + 'headdress/cc_' + (i2 + 1) + '.png';
-      image2.onload = function () {
-        ctx.drawImage(image2, 0, 0, 348, 266);
-        var image3 = new Image();
-        image3.src = imgSrc + 'handObject/cc_' + (i3 + 1) + '.png';
-        image3.onload = function () {
-          ctx.drawImage(image3, 0, 0, 348, 266);
-          cloudFace = canvas1.toDataURL();
-          var canvas = document.getElementById('canvas');
-          var context = canvas.getContext('2d');
-          var image = new Image();
-          image.src = './images/save_img2.png';
-          image.onload = function () {
-            context.drawImage(image, 0, 0, 492, 661);
-            context.drawImage(document.getElementById("save"), 35, 35, 100, 100);
-            context.drawImage(document.getElementById("code"), 376, 510, 78, 78);
-            context.drawImage(document.getElementById("name_box"), 21, 143, 130, 58);
-            context.textAlign = 'center';
-            context.font = '20px 微软雅黑';
-            context.fillText('用户ID', 85, 170);
-            context.fillText(txt_gen, 85, 192);
-            var image4 = new Image();
-            image4.src = cloudFace;
-            $("#cloudImg").attr("src", cloudFace);
-            image4.onload = function () {
-              context.translate(200, 20)
-              context.rotate(Math.PI / 6)
-              context.drawImage(image4, 15, -45, 348 * 0.55, 266 * 0.55);
-              $("#s_Img").attr("src",canvas.toDataURL());
+    var image0 = new Image();
+    image0.src = './images/new/handObject/big_m.png';
+    image0.onload = function () {
+      ctx.drawImage(image0, 0, 0, 348, 266);
+      var image1 = new Image();
+      image1.src = imgSrc + 'expression/cc_' + (i1 + 1) + '.png';
+      image1.onload = function () {
+        ctx.drawImage(image1, 0, 0, 348, 266);
+        var image2 = new Image();
+        image2.src = imgSrc + 'headdress/cc_' + (i2 + 1) + '.png';
+        image2.onload = function () {
+          ctx.drawImage(image2, 0, 0, 348, 266);
+          var image3 = new Image();
+          image3.src = imgSrc + 'handObject/cc_' + (i3 + 1) + '.png';
+          image3.onload = function () {
+            ctx.drawImage(image3, 0, 0, 348, 266);
+            cloudFace = canvas1.toDataURL();
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
+            var image = new Image();
+            image.src = './images/save_img2.png';
+            image.onload = function () {
+              context.drawImage(image, 0, 0, 492, 661);
+              context.drawImage(document.getElementById("save"), 35, 35, 100, 100);
+              context.drawImage(document.getElementById("code"), 376, 510, 78, 78);
+              context.drawImage(document.getElementById("name_box"), 21, 143, 130, 58);
+              context.textAlign = 'center';
+              context.font = '20px 微软雅黑';
+              context.fillText('用户ID', 85, 170);
+              context.fillText(txt_gen, 85, 192);
+              var image4 = new Image();
+              image4.src = cloudFace;
+              $("#cloudImg").attr("src", cloudFace);
+              image4.onload = function () {
+                context.translate(200, 20)
+                context.rotate(Math.PI / 6)
+                context.drawImage(image4, 15, -45, 348 * 0.55, 266 * 0.55);
+                $("#s_Img").attr("src", canvas.toDataURL());
+              }
             }
           }
         }
       }
     }
   }
+
 
   
 }
@@ -627,6 +879,17 @@ function GeneratePoster(savearr) {
 
 
 $(".share_img").on("click", () => {
+  $(".last").hide();
+  $(".type_page").show();
+  if (flag == '2') {
+    $(".type_box").hide();
+    $(".success_txt").show();
+  } else if (flag == '1') {
+
+  }
+})
+
+$(".share_img1").on("click", () => {
   setTimeout(() => {
     // window.location.href = 'https://www.baidu.com/';
   }, 200);
